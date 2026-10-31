@@ -28,6 +28,8 @@ export default function BikeBuilderPage() {
   );
 
   const [showWheels, setShowWheels] = useState(true);
+  const [showHandlebars, setShowHandlebars] = useState(false);
+  const [showSaddle, setShowSaddle] = useState(false);
 
   return (
     <main className="min-h-screen bg-background">
@@ -55,6 +57,8 @@ export default function BikeBuilderPage() {
             <BikePreview
               frameColor={selectedColor.hex}
               showWheels={showWheels}
+              showHandlebars={showHandlebars}
+              showSaddle={showSaddle}
             />
           </div>
 
@@ -103,9 +107,7 @@ export default function BikeBuilderPage() {
                         ? "border-neutral-900"
                         : "border-transparent"
                     }`}
-                    style={{
-                      backgroundColor: color.hex,
-                    }}
+                    style={{ backgroundColor: color.hex }}
                   />
                 ))}
               </div>
@@ -136,17 +138,71 @@ export default function BikeBuilderPage() {
               </button>
             </div>
 
+            {/* Handlebar configuration */}
+            <div className="border-t border-neutral-300 pt-6">
+              <p className="font-mono text-xs uppercase tracking-wider text-neutral-500">
+                03 / Handlebars
+              </p>
+
+              <h3 className="mt-4 text-xl font-semibold">
+                Flat handlebar
+              </h3>
+
+              <p className="mt-2 text-sm text-neutral-600">
+                {showHandlebars
+                  ? "Handlebars installed"
+                  : "No handlebars selected"}
+              </p>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setShowHandlebars((previous) => !previous)
+                }
+                className="mt-6 border border-foreground px-6 py-3 text-sm font-medium transition-colors hover:bg-foreground hover:text-white"
+              >
+                {showHandlebars
+                  ? "Remove handlebars"
+                  : "Add handlebars"}
+              </button>
+            </div>
+
+            {/* Saddle configuration */}
+            <div className="border-t border-neutral-300 pt-6">
+              <p className="font-mono text-xs uppercase tracking-wider text-neutral-500">
+                04 / Saddle
+              </p>
+
+              <h3 className="mt-4 text-xl font-semibold">
+                Standard saddle
+              </h3>
+
+              <p className="mt-2 text-sm text-neutral-600">
+                {showSaddle
+                  ? "Saddle installed"
+                  : "No saddle selected"}
+              </p>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setShowSaddle((previous) => !previous)
+                }
+                className="mt-6 border border-foreground px-6 py-3 text-sm font-medium transition-colors hover:bg-foreground hover:text-white"
+              >
+                {showSaddle ? "Remove saddle" : "Add saddle"}
+              </button>
+            </div>
+
             {/* Upcoming components */}
             <div className="border-t border-neutral-300 pt-6">
               <p className="font-mono text-xs uppercase tracking-wider text-neutral-500">
                 Next components
               </p>
 
-              <div className="mt-5 space-y-4 text-sm text-neutral-500">
-                <p>03 / Handlebars</p>
-                <p>04 / Saddle</p>
-                <p>05 / Drivetrain</p>
-              </div>
+              <p className="mt-5 text-sm text-neutral-500">
+                05 / Drivetrain
+              </p>
             </div>
 
             {/* Navigation */}

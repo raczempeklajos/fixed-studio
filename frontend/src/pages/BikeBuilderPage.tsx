@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { bikeBuilds } from "../data/bikes";
+import BikePreview from "../components/bike/BikePreview";
 
 type FrameColor = {
   name: string;
@@ -22,13 +23,16 @@ export default function BikeBuilderPage() {
     (bike) => bike.id === buildId
   );
 
-  const [selectedColor, setSelectedColor] = useState(
+  const [selectedColor, setSelectedColor] = useState<FrameColor>(
     frameColors[0]
   );
+
+  const [showWheels, setShowWheels] = useState(true);
 
   return (
     <main className="min-h-screen bg-background">
       <section className="mx-auto max-w-[1600px] px-6 py-12 md:px-12 lg:px-16">
+        {/* Page heading */}
         <div className="border-b border-neutral-300 pb-8">
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-neutral-500">
             Fixed Studio / Builder
@@ -44,69 +48,19 @@ export default function BikeBuilderPage() {
           </p>
         </div>
 
+        {/* Builder layout */}
         <div className="grid gap-10 py-12 lg:grid-cols-[1fr_360px]">
-          {/* Interactive frame preview */}
+          {/* Interactive bicycle preview */}
           <div className="flex min-h-[480px] items-center justify-center bg-neutral-200 p-6">
-            <svg
-              viewBox="0 0 800 500"
-              className="w-full max-w-[900px]"
-              role="img"
-              aria-label={`${selectedColor.name} bicycle frame preview`}
-            >
-              {/* Frame tubes */}
-              <g
-                fill="none"
-                stroke={selectedColor.hex}
-                strokeWidth="15"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M200 360 L345 160 L470 360 Z" />
-                <path d="M345 160 L555 165 L470 360" />
-              </g>
-
-              {/* Head tube */}
-              <line
-                x1="555"
-                y1="150"
-                x2="575"
-                y2="205"
-                stroke={selectedColor.hex}
-                strokeWidth="22"
-                strokeLinecap="round"
-              />
-
-              {/* Bottom bracket */}
-              <circle
-                cx="470"
-                cy="360"
-                r="17"
-                fill="#252525"
-              />
-
-              {/* Rear dropout */}
-              <circle
-                cx="200"
-                cy="360"
-                r="10"
-                fill="#252525"
-              />
-
-              {/* Seat tube opening */}
-              <line
-                x1="337"
-                y1="149"
-                x2="354"
-                y2="149"
-                stroke="#252525"
-                strokeWidth="7"
-                strokeLinecap="round"
-              />
-            </svg>
+            <BikePreview
+              frameColor={selectedColor.hex}
+              showWheels={showWheels}
+            />
           </div>
 
           {/* Configuration panel */}
           <aside className="flex flex-col gap-10">
+            {/* Current build */}
             <div>
               <p className="font-mono text-xs uppercase tracking-widest text-neutral-500">
                 Current setup
@@ -143,9 +97,7 @@ export default function BikeBuilderPage() {
                     type="button"
                     onClick={() => setSelectedColor(color)}
                     aria-label={`Select ${color.name}`}
-                    aria-pressed={
-                      selectedColor.name === color.name
-                    }
+                    aria-pressed={selectedColor.name === color.name}
                     className={`h-12 w-12 rounded-full border-4 transition-transform hover:scale-110 ${
                       selectedColor.name === color.name
                         ? "border-neutral-900"
@@ -159,23 +111,48 @@ export default function BikeBuilderPage() {
               </div>
             </div>
 
-            {/* Upcoming component categories */}
+            {/* Wheel configuration */}
+            <div className="border-t border-neutral-300 pt-6">
+              <p className="font-mono text-xs uppercase tracking-wider text-neutral-500">
+                02 / Wheels
+              </p>
+
+              <h3 className="mt-4 text-xl font-semibold">
+                Wheelset
+              </h3>
+
+              <p className="mt-2 text-sm text-neutral-600">
+                {showWheels
+                  ? "Standard wheelset"
+                  : "No wheels selected"}
+              </p>
+
+              <button
+                type="button"
+                onClick={() => setShowWheels((previous) => !previous)}
+                className="mt-6 border border-foreground px-6 py-3 text-sm font-medium transition-colors hover:bg-foreground hover:text-white"
+              >
+                {showWheels ? "Remove wheels" : "Add wheels"}
+              </button>
+            </div>
+
+            {/* Upcoming components */}
             <div className="border-t border-neutral-300 pt-6">
               <p className="font-mono text-xs uppercase tracking-wider text-neutral-500">
                 Next components
               </p>
 
               <div className="mt-5 space-y-4 text-sm text-neutral-500">
-                <p>02 / Wheels</p>
                 <p>03 / Handlebars</p>
                 <p>04 / Saddle</p>
                 <p>05 / Drivetrain</p>
               </div>
             </div>
 
+            {/* Navigation */}
             <Link
               to="/explore"
-              className="border-b border-foreground pb-1 text-sm font-medium self-start"
+              className="self-start border-b border-foreground pb-1 text-sm font-medium hover:text-accent"
             >
               Explore other builds
             </Link>

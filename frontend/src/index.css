@@ -2,17 +2,30 @@
 @import "tailwindcss";
 
 :root {
-  font-family: Inter, Arial, sans-serif;
+  font-family: "DM Sans", sans-serif;
   color: #171717;
-  background-color: #f8f8f6;
+  background: #f7f7f4;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
 
+@theme {
+  --font-sans: "DM Sans", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+
+  --color-background: #f7f7f4;
+  --color-foreground: #171717;
+  --color-accent: #e34b35;
+}
+
 * {
   box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -20,6 +33,16 @@ body {
   min-width: 320px;
 }
 
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
 button {
   cursor: pointer;
+}
+
+::selection {
+  background: #171717;
+  color: white;
 }

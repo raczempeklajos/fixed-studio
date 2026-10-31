@@ -97,7 +97,7 @@ export default function ExploreBuildsPage() {
               </div>
 
               <Link
-                to="/builder"
+                to={`/builder?build=${bike.id}`}
                 className="mt-6 inline-block border-b border-foreground pb-1 text-sm font-medium hover:text-accent"
               >
                 Customize this build

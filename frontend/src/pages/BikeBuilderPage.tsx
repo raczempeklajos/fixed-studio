@@ -8,6 +8,7 @@ import type {
     WheelType,
     WheelColor,
     } from "../components/bike/Wheels";
+import type { FrameType } from "../components/bike/Frame";
 
 type FrameColor = {
   name: string;
@@ -42,7 +43,7 @@ export default function BikeBuilderPage() {
   const [showDrivetrain, setShowDrivetrain] = useState(false);
   const [wheelType, setWheelType] = useState<WheelType>("classic");
   const [wheelColor, setWheelColor] = useState<WheelColor>("black");
-
+  const [frameType, setFrameType] = useState<FrameType>("classic");
   return (
     <main className="min-h-screen bg-background">
       <section className="mx-auto max-w-[1600px] px-6 py-12 md:px-12 lg:px-16">
@@ -76,6 +77,7 @@ export default function BikeBuilderPage() {
             handlebarType={handlebarType}
             wheelType={wheelType}
             wheelColor={wheelColor}
+            frameType={frameType}
             />
 
           </div>
@@ -129,6 +131,31 @@ export default function BikeBuilderPage() {
                   />
                 ))}
               </div>
+
+                <div className="mt-8">
+                    <p className="font-mono text-xs uppercase tracking-wider text-neutral-500">
+                        Frame geometry
+                    </p>
+
+                    <div className="mt-4 grid grid-cols-2 gap-2">
+                        {(["classic", "aggressive"] as FrameType[]).map((type) => (
+                        <button
+                            key={type}
+                            type="button"
+                            onClick={() => setFrameType(type)}
+                            aria-pressed={frameType === type}
+                            className={`border px-4 py-3 text-sm font-medium transition-colors ${
+                            frameType === type
+                                ? "border-foreground bg-foreground text-white"
+                                : "border-neutral-300 hover:border-foreground"
+                            }`}
+                        >
+                            {type === "classic" ? "Classic Track" : "Aggressive Track"}
+                        </button>
+                        ))}
+                    </div>
+                    </div>
+
             </div>
 
             

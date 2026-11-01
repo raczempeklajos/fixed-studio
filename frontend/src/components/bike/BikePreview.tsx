@@ -6,7 +6,7 @@ import Wheels, {
   type WheelType,
   type WheelColor,
 } from "./Wheels";
-import Frame from "./Frame";
+import Frame, { type FrameType } from "./Frame";
 import Fork from "./Fork";
 
 interface BikePreviewProps {
@@ -18,6 +18,7 @@ interface BikePreviewProps {
   handlebarType: HandlebarType;
   wheelType: WheelType;
   wheelColor: WheelColor;
+  frameType: FrameType;
 }
 
 export default function BikePreview({
@@ -29,6 +30,7 @@ export default function BikePreview({
   handlebarType,
   wheelType,
   wheelColor,
+  frameType,
 }: BikePreviewProps) {
   return (
     <svg
@@ -43,7 +45,7 @@ export default function BikePreview({
       )}
 
       {/* Frame and fork */}
-      <Frame color={frameColor} />
+      <Frame color={frameColor} type={frameType} />
       <Fork color={frameColor} />
 
       {/* Optional components */}

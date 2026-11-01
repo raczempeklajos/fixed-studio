@@ -1,3 +1,4 @@
+
 import Saddle from "./Saddle";
 import Drivetrain from "./Drivetrain";
 import Handlebars, { type HandlebarType } from "./Handlebars";
@@ -5,6 +6,8 @@ import Wheels, {
   type WheelType,
   type WheelColor,
 } from "./Wheels";
+import Frame from "./Frame";
+import Fork from "./Fork";
 
 interface BikePreviewProps {
   frameColor: string;
@@ -34,65 +37,22 @@ export default function BikePreview({
       role="img"
       aria-label="Custom bicycle preview"
     >
-      {/* Bicycle wheels */}
-        {showWheels && (
+      {/* Wheels */}
+      {showWheels && (
         <Wheels type={wheelType} color={wheelColor} />
-        )}
+      )}
 
-      {/* Bicycle frame */}
-      <g
-        fill="none"
-        stroke={frameColor}
-        strokeWidth="15"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M200 360 L345 160 L470 360 Z" />
-        <path d="M345 160 L555 165 L470 360" />
-      </g>
-
-      {/* Head tube */}
-      <line
-        x1="555"
-        y1="150"
-        x2="575"
-        y2="205"
-        stroke={frameColor}
-        strokeWidth="22"
-        strokeLinecap="round"
-      />
-
-      {/* Fork */}
-      <line
-        x1="575"
-        y1="205"
-        x2="600"
-        y2="360"
-        stroke="#444444"
-        strokeWidth="12"
-        strokeLinecap="round"
-      />
-
-      {/* Bottom bracket */}
-      <circle cx="470" cy="360" r="17" fill="#252525" />
-
-      {/* Rear dropout */}
-      <circle cx="200" cy="360" r="10" fill="#252525" />
-
-      {/* Seat tube opening */}
-      <line
-        x1="337"
-        y1="149"
-        x2="354"
-        y2="149"
-        stroke="#252525"
-        strokeWidth="7"
-        strokeLinecap="round"
-      />
+      {/* Frame and fork */}
+      <Frame color={frameColor} />
+      <Fork color={frameColor} />
 
       {/* Optional components */}
-      {showHandlebars && <Handlebars type={handlebarType} />}
+      {showHandlebars && (
+        <Handlebars type={handlebarType} />
+      )}
+
       {showSaddle && <Saddle />}
+
       {showDrivetrain && <Drivetrain />}
     </svg>
   );

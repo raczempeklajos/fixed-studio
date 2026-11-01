@@ -4,11 +4,16 @@ import { Link, useSearchParams } from "react-router-dom";
 import { bikeBuilds } from "../data/bikes";
 import BikePreview from "../components/bike/BikePreview";
 import type { HandlebarType } from "../components/bike/Handlebars";
+import type {
+    WheelType,
+    WheelColor,
+    } from "../components/bike/Wheels";
 
 type FrameColor = {
   name: string;
   hex: string;
 };
+
 
 const frameColors: FrameColor[] = [
   { name: "Matte Black", hex: "#252525" },
@@ -35,6 +40,8 @@ export default function BikeBuilderPage() {
   const [showHandlebars, setShowHandlebars] = useState(false);
   const [showSaddle, setShowSaddle] = useState(false);
   const [showDrivetrain, setShowDrivetrain] = useState(false);
+  const [wheelType, setWheelType] = useState<WheelType>("classic");
+  const [wheelColor, setWheelColor] = useState<WheelColor>("black");
 
   return (
     <main className="min-h-screen bg-background">
@@ -67,6 +74,8 @@ export default function BikeBuilderPage() {
             showSaddle={showSaddle}
             showDrivetrain={showDrivetrain}
             handlebarType={handlebarType}
+            wheelType={wheelType}
+            wheelColor={wheelColor}
             />
 
           </div>
@@ -122,30 +131,85 @@ export default function BikeBuilderPage() {
               </div>
             </div>
 
+            
             {/* Wheel configuration */}
             <div className="border-t border-neutral-300 pt-6">
-              <p className="font-mono text-xs uppercase tracking-wider text-neutral-500">
+            <p className="font-mono text-xs uppercase tracking-wider text-neutral-500">
                 02 / Wheels
-              </p>
+            </p>
 
-              <h3 className="mt-4 text-xl font-semibold">
+            <h3 className="mt-4 text-xl font-semibold">
                 Wheelset
-              </h3>
+            </h3>
 
-              <p className="mt-2 text-sm text-neutral-600">
-                {showWheels
-                  ? "Standard wheelset"
-                  : "No wheels selected"}
-              </p>
+            <p className="mt-2 text-sm text-neutral-600">
+                {showWheels ? "Configure your wheelset." : "No wheels selected"}
+            </p>
 
-              <button
-                type="button"
-                onClick={() => setShowWheels((previous) => !previous)}
-                className="mt-6 border border-foreground px-6 py-3 text-sm font-medium transition-colors hover:bg-foreground hover:text-white"
-              >
-                {showWheels ? "Remove wheels" : "Add wheels"}
-              </button>
+            <div className="mt-6 grid grid-cols-2 gap-2">
+                {(["classic", "deep"] as WheelType[]).map((type) => (
+                <button
+                    key={type}
+                    type="button"
+                    onClick={() => {
+                    setWheelType(type);
+                    setShowWheels(true);
+                    }}
+                    aria-pressed={showWheels && wheelType === type}
+                    className={`border px-4 py-3 text-sm font-medium capitalize transition-colors ${
+                    showWheels && wheelType === type
+                        ? "border-foreground bg-foreground text-white"
+                        : "border-neutral-300 hover:border-foreground"
+                    }`}
+                >
+                    {type === "classic" ? "Classic Rim" : "Deep Rim"}
+                </button>
+                ))}
             </div>
+
+            <p className="mt-6 font-mono text-xs uppercase tracking-wider text-neutral-500">
+                Rim color
+            </p>
+
+            <div className="mt-4 flex gap-3">
+                {(["black", "silver", "white"] as WheelColor[]).map((color) => (
+                <button
+                    key={color}
+                    type="button"
+                    onClick={() => {
+                    setWheelColor(color);
+                    setShowWheels(true);
+                    }}
+                    aria-label={`Select ${color} rims`}
+                    aria-pressed={showWheels && wheelColor === color}
+                    className={`h-11 w-11 rounded-full border-4 transition-transform hover:scale-110 ${
+                    showWheels && wheelColor === color
+                        ? "border-neutral-900"
+                        : "border-neutral-300"
+                    }`}
+                    style={{
+                    backgroundColor:
+                        color === "black"
+                        ? "#252525"
+                        : color === "silver"
+                        ? "#A5A5A5"
+                        : "#F5F5F5",
+                    }}
+                />
+                ))}
+            </div>
+
+            {showWheels && (
+                <button
+                type="button"
+                onClick={() => setShowWheels(false)}
+                className="mt-5 text-sm text-neutral-500 underline underline-offset-4 hover:text-foreground"
+                >
+                Remove wheels
+                </button>
+            )}
+            </div>
+
 
             
 {/* Handlebar configuration */}

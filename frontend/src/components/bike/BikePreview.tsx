@@ -1,6 +1,10 @@
 import Saddle from "./Saddle";
 import Drivetrain from "./Drivetrain";
 import Handlebars, { type HandlebarType } from "./Handlebars";
+import Wheels, {
+  type WheelType,
+  type WheelColor,
+} from "./Wheels";
 
 interface BikePreviewProps {
   frameColor: string;
@@ -9,6 +13,8 @@ interface BikePreviewProps {
   showSaddle: boolean;
   showDrivetrain: boolean;
   handlebarType: HandlebarType;
+  wheelType: WheelType;
+  wheelColor: WheelColor;
 }
 
 export default function BikePreview({
@@ -18,6 +24,8 @@ export default function BikePreview({
   showSaddle,
   showDrivetrain,
   handlebarType,
+  wheelType,
+  wheelColor,
 }: BikePreviewProps) {
   return (
     <svg
@@ -27,31 +35,9 @@ export default function BikePreview({
       aria-label="Custom bicycle preview"
     >
       {/* Bicycle wheels */}
-      {showWheels && (
-        <g>
-          <circle
-            cx="200"
-            cy="360"
-            r="120"
-            fill="none"
-            stroke="#252525"
-            strokeWidth="9"
-          />
-
-          <circle
-            cx="600"
-            cy="360"
-            r="120"
-            fill="none"
-            stroke="#252525"
-            strokeWidth="9"
-          />
-
-          {/* Wheel hubs */}
-          <circle cx="200" cy="360" r="12" fill="#555555" />
-          <circle cx="600" cy="360" r="12" fill="#555555" />
-        </g>
-      )}
+        {showWheels && (
+        <Wheels type={wheelType} color={wheelColor} />
+        )}
 
       {/* Bicycle frame */}
       <g

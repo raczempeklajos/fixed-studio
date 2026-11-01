@@ -12,7 +12,7 @@ export default function Handlebars({
   type,
   frameType,
 }: HandlebarsProps) {
-  const offsetY = frameType === "aggressive" ? -25 : 0;
+  const offsetY = frameType === "aggressive" ? -42 : 0;
 
   return (
     <g transform={`translate(0 ${offsetY})`}>

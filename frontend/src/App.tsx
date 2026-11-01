@@ -9,12 +9,28 @@ import BikeBuilderPage from "./pages/BikeBuilderPage";
 export default function App() {
   return (
     <BrowserRouter>
-      <Navbar />
-
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/explore" element={<ExploreBuildsPage />} />
-        <Route path="/builder" element={<BikeBuilderPage />} />
+
+        <Route
+          path="/explore"
+          element={
+            <>
+              <Navbar />
+              <ExploreBuildsPage />
+            </>
+          }
+        />
+
+        <Route
+          path="/builder"
+          element={
+            <>
+              <Navbar />
+              <BikeBuilderPage />
+            </>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

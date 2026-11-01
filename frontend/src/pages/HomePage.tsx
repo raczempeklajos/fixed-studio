@@ -1,66 +1,364 @@
 
+import { useEffect, useRef, useState } from "react";
+import type {
+  PointerEvent as ReactPointerEvent,
+  WheelEvent as ReactWheelEvent,
+} from "react";
 import { Link } from "react-router-dom";
 
+const pages = ["Introduction", "Explore", "Build"];
+
+const SWIPE_THRESHOLD = 55;
+const WHEEL_THRESHOLD = 45;
+const SWIPE_COOLDOWN = 850;
+
 export default function HomePage() {
+  const [activePage, setActivePage] = useState(0);
+
+  const pointerStart = useRef<{
+    x: number;
+    y: number;
+  } | null>(null);
+
+  const wheelDistance = useRef(0);
+  const lastSwipeTime = useRef(0);
+
+  const changePage = (direction: number) => {
+    setActivePage((previous) =>
+      Math.max(
+        0,
+        Math.min(previous + direction, pages.length - 1)
+      )
+    );
+  };
+
+  const nextPage = () => changePage(1);
+  const previousPage = () => changePage(-1);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "ArrowRight") {
+        nextPage();
+      }
+
+      if (event.key === "ArrowLeft") {
+        previousPage();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
+  // Trackpad navigation
+  const handleWheel = (
+    event: ReactWheelEvent<HTMLDivElement>
+  ) => {
+    const now = Date.now();
+
+    if (now - lastSwipeTime.current < SWIPE_COOLDOWN) {
+      return;
+    }
+
+    if (Math.abs(event.deltaX) <= Math.abs(event.deltaY)) {
+      wheelDistance.current = 0;
+      return;
+    }
+
+    wheelDistance.current += event.deltaX;
+
+    if (Math.abs(wheelDistance.current) < WHEEL_THRESHOLD) {
+      return;
+    }
+
+    changePage(wheelDistance.current > 0 ? 1 : -1);
+
+    wheelDistance.current = 0;
+    lastSwipeTime.current = now;
+  };
+
+  // Mouse drag and touch navigation
+  const handlePointerDown = (
+    event: ReactPointerEvent<HTMLDivElement>
+  ) => {
+    if (
+      event.pointerType === "mouse" &&
+      event.button !== 0
+    ) {
+      return;
+    }
+
+    if (
+      event.target instanceof Element &&
+      event.target.closest("a, button, input, textarea")
+    ) {
+      return;
+    }
+
+    pointerStart.current = {
+      x: event.clientX,
+      y: event.clientY,
+    };
+  };
+
+  const handlePointerUp = (
+    event: ReactPointerEvent<HTMLDivElement>
+  ) => {
+    if (!pointerStart.current) return;
+
+    const differenceX =
+      pointerStart.current.x - event.clientX;
+
+    const differenceY =
+      pointerStart.current.y - event.clientY;
+
+    if (
+      Math.abs(differenceX) > SWIPE_THRESHOLD &&
+      Math.abs(differenceX) > Math.abs(differenceY)
+    ) {
+      changePage(differenceX > 0 ? 1 : -1);
+    }
+
+    pointerStart.current = null;
+  };
+
   return (
-    <main className="bg-background">
-      <section className="mx-auto grid min-h-[calc(100svh-88px)] max-w-[1600px] grid-cols-1 lg:grid-cols-2">
-        {/* Editorial content */}
-        <div className="flex flex-col justify-between px-6 py-12 md:px-12 lg:px-16 lg:py-16">
-          <p className="font-mono text-xs uppercase tracking-[0.2em] text-neutral-500">
-            Fixed gear / Single speed
-          </p>
+    <main className="flex h-svh flex-col overflow-hidden bg-[#181818] px-4 py-3 text-[#171717] md:px-8">
+      {/* HEADER */}
+      <header className="mx-auto flex w-full max-w-[1500px] shrink-0 items-center justify-between py-3 text-[#F2F0E9]">
+        <Link
+          to="/"
+          className="group relative inline-flex flex-col py-2"
+        >
+          <span className="text-lg font-black tracking-[-0.06em] transition-transform duration-300 group-hover:-translate-y-0.5">
+            FIXED/STUDIO®
+          </span>
 
-          <div className="py-20 lg:py-10">
-            <h1 className="max-w-[700px] text-[clamp(4rem,8vw,8.5rem)] leading-[0.9] font-semibold tracking-[-0.075em]">
-              BUILT
-              <br />
-              YOUR
-              <br />
-              WAY.
-            </h1>
+          <span className="absolute bottom-0 left-0 h-px w-full origin-left scale-x-0 bg-[#B7CC49] transition-transform duration-300 group-hover:scale-x-100" />
+        </Link>
 
-            <p className="mt-10 max-w-md text-base leading-relaxed text-neutral-600 md:text-lg">
-              A different way to build your bicycle.
-              Explore real components, discover new combinations,
-              and create something entirely your own.
-            </p>
+        <nav className="flex items-center gap-6 font-mono text-xs uppercase tracking-wider">
+          <Link
+            to="/explore"
+            className="transition-colors hover:text-[#B7CC49]"
+          >
+            Explore
+          </Link>
 
-            <div className="mt-10 flex flex-wrap items-center gap-6">
+          <Link
+            to="/builder"
+            className="transition-colors hover:text-[#B7CC49]"
+          >
+            Build
+          </Link>
+        </nav>
+      </header>
+
+      {/* HORIZONTAL SLIDER */}
+      <div
+        className="mx-auto min-h-0 w-full max-w-[1500px] flex-1 touch-pan-y select-none overflow-hidden"
+        onWheel={handleWheel}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={() => {
+          pointerStart.current = null;
+        }}
+        onDragStart={(event) => event.preventDefault()}
+      >
+        <div
+          className="flex h-full transition-transform duration-700 ease-in-out motion-reduce:transition-none"
+          style={{
+            transform: `translateX(-${activePage * 100}%)`,
+          }}
+        >
+          {/* PAGE 01 — HOME */}
+          <section className="flex h-full min-w-full flex-col overflow-hidden bg-[#E9E7DF] p-5 md:p-8 lg:p-10">
+            <div className="flex min-h-0 flex-1 flex-col gap-6 lg:flex-row lg:gap-10">
+              
+
+{/* INTERACTIVE IMAGE */}
+<div className="group relative min-h-0 flex-1 overflow-hidden bg-[#252525]">
+  {/* BIKE IMAGE */}
+  <img
+    src="/images/hero-bike.jpg"
+    alt="Fixed gear bicycle"
+    draggable={false}
+    className="
+      h-full
+      w-full
+      object-cover
+      object-center
+      transition-transform
+      duration-700
+      ease-out
+      group-hover:scale-105
+    "
+  />
+
+  {/* REVEAL PANEL */}
+  <div
+    className="
+      absolute
+      inset-0
+      flex
+      translate-y-full
+      flex-col
+      items-center
+      justify-center
+      bg-[#171717]
+      p-8
+      text-center
+      transition-transform
+      duration-700
+      ease-[cubic-bezier(0.76,0,0.24,1)]
+      group-hover:translate-y-0
+    "
+  >
+    <h2 className="text-[clamp(2rem,4vw,5rem)] font-black leading-[0.95] tracking-[-0.07em] text-[#E9E7DF]">
+      MORE THAN
+      <br />
+      A BIKE.
+    </h2>
+
+    <p className="mt-5 text-sm text-[#B7CC49]">
+      Built by you. Made to move.
+    </p>
+  </div>
+</div>
+
+
+
+              {/* CONTENT */}
+              <div className="flex w-full shrink-0 flex-col justify-center lg:w-[38%]">
+                <h1 className="text-[clamp(3rem,5.5vw,6.5rem)] font-black leading-[0.9] tracking-[-0.085em]">
+                  BUILT
+                  <br />
+                  DIFFERENT.
+                </h1>
+
+                
               <Link
                 to="/builder"
-                className="inline-flex min-h-12 items-center justify-center bg-foreground px-7 text-sm font-medium text-white transition-colors hover:bg-accent"
+                className="
+                  group
+                  relative
+                  mt-10
+                  inline-flex
+                  w-fit
+                  overflow-hidden
+                  bg-[#B7CC49]
+                  px-8
+                  py-5
+                  font-mono
+                  text-xs
+                  font-semibold
+                  uppercase
+                  tracking-[0.12em]
+                  transition-all
+                  duration-300
+                  ease-out
+                  hover:-translate-y-1
+                  hover:bg-[#171717]
+                  active:translate-y-0
+                  active:scale-[0.97]
+                  focus-visible:outline-2
+                  focus-visible:outline-offset-4
+                  focus-visible:outline-[#171717]
+                "
               >
-                Start from scratch
+                <span className="relative block overflow-hidden">
+                  <span
+                    className="
+                      block
+                      text-[#171717]
+                      transition-transform
+                      duration-300
+                      ease-out
+                      group-hover:-translate-y-full
+                    "
+                  >
+                    Start building
+                  </span>
+
+                  <span
+                    aria-hidden="true"
+                    className="
+                      absolute
+                      inset-0
+                      translate-y-full
+                      text-[#B7CC49]
+                      transition-transform
+                      duration-300
+                      ease-out
+                      group-hover:translate-y-0
+                    "
+                  >
+                    Start building
+                  </span>
+                </span>
               </Link>
 
-              <Link
-                to="/explore"
-                className="border-b border-foreground pb-1 text-sm font-medium transition-colors hover:text-accent"
-              >
-                Explore builds
-              </Link>
+              </div>
             </div>
-          </div>
+          </section>
 
-          <p className="font-mono text-[11px] uppercase tracking-wider text-neutral-500">
-            Real brands. Real components. Your build.
-          </p>
+          {/* PAGE 02 — EXPLORE */}
+          <section className="flex h-full min-w-full flex-col justify-center overflow-hidden bg-[#D8D5CB] p-5 md:p-8 lg:p-10">
+            <h2 className="text-[clamp(3.5rem,9vw,9rem)] font-black leading-[0.85] tracking-[-0.085em]">
+              EXPLORE
+              <br />
+              BUILDS.
+            </h2>
+
+            <Link
+              to="/explore"
+              className="mt-10 w-fit border-b border-[#171717] pb-2 font-mono text-xs font-medium uppercase tracking-wider transition-opacity hover:opacity-50"
+            >
+              Explore
+            </Link>
+          </section>
+
+          {/* PAGE 03 — BUILD */}
+          <section className="flex h-full min-w-full flex-col justify-center overflow-hidden bg-[#B7CC49] p-5 md:p-8 lg:p-10">
+            <h2 className="text-[clamp(3.5rem,9vw,9rem)] font-black leading-[0.85] tracking-[-0.085em]">
+              MAKE IT
+              <br />
+              YOURS.
+            </h2>
+
+            <Link
+              to="/builder"
+              className="mt-10 w-fit border-b border-[#171717] pb-2 font-mono text-xs font-medium uppercase tracking-wider transition-opacity hover:opacity-50"
+            >
+              Start building
+            </Link>
+          </section>
         </div>
+      </div>
 
-        {/* Hero photography */}
-        <div className="relative min-h-[420px] overflow-hidden bg-[#19242b] lg:min-h-full">
-          <img
-            src="/images/hero-bike.jpg"
-            alt="Silver Peugeot bicycle against a dark wall"
-            className="absolute inset-0 h-full w-full object-contain"
+      {/* MINIMAL SLIDE INDICATORS */}
+      <footer className="flex shrink-0 items-center justify-center gap-3 py-4">
+        {pages.map((page, index) => (
+          <button
+            key={page}
+            type="button"
+            onClick={() => setActivePage(index)}
+            aria-label={`Go to ${page}`}
+            aria-current={
+              activePage === index ? "step" : undefined
+            }
+            className={`h-[2px] transition-all duration-300 ${
+              activePage === index
+                ? "w-10 bg-[#E9E7DF]"
+                : "w-5 bg-[#666666]"
+            }`}
           />
-
-          <div className="absolute right-6 bottom-6 bg-background px-4 py-3 font-mono text-[10px] uppercase tracking-wider">
-            Fixed Studio — 001
-          </div>
-        </div>
-      </section>
+        ))}
+      </footer>
     </main>
   );
 }

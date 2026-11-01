@@ -19,6 +19,7 @@ interface BikePreviewProps {
   wheelType: WheelType;
   wheelColor: WheelColor;
   frameType: FrameType;
+  forkColor: string;
 }
 
 export default function BikePreview({
@@ -31,6 +32,7 @@ export default function BikePreview({
   wheelType,
   wheelColor,
   frameType,
+  forkColor,
 }: BikePreviewProps) {
   return (
     <svg
@@ -46,7 +48,7 @@ export default function BikePreview({
 
       {/* Frame and fork */}
       <Frame color={frameColor} type={frameType} />
-      <Fork color={frameColor} />
+      <Fork color={forkColor} />
 
       {showHandlebars && (
         <Handlebars

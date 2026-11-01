@@ -1,11 +1,14 @@
-import Handlebars from "./Handlebars";
 import Saddle from "./Saddle";
+import Drivetrain from "./Drivetrain";
+import Handlebars, { type HandlebarType } from "./Handlebars";
 
 interface BikePreviewProps {
   frameColor: string;
   showWheels: boolean;
   showHandlebars: boolean;
   showSaddle: boolean;
+  showDrivetrain: boolean;
+  handlebarType: HandlebarType;
 }
 
 export default function BikePreview({
@@ -13,6 +16,8 @@ export default function BikePreview({
   showWheels,
   showHandlebars,
   showSaddle,
+  showDrivetrain,
+  handlebarType,
 }: BikePreviewProps) {
   return (
     <svg
@@ -98,8 +103,11 @@ export default function BikePreview({
         strokeWidth="7"
         strokeLinecap="round"
       />
-        {showHandlebars && <Handlebars />}
-        {showSaddle && <Saddle />}
+
+      {/* Optional components */}
+      {showHandlebars && <Handlebars type={handlebarType} />}
+      {showSaddle && <Saddle />}
+      {showDrivetrain && <Drivetrain />}
     </svg>
   );
 }

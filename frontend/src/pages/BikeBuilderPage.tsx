@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { bikeBuilds } from "../data/bikes";
 import BikePreview from "../components/bike/BikePreview";
+import type { HandlebarType } from "../components/bike/Handlebars";
 
 type FrameColor = {
   name: string;
@@ -27,9 +28,13 @@ export default function BikeBuilderPage() {
     frameColors[0]
   );
 
+  const [handlebarType, setHandlebarType] =
+  useState<HandlebarType>("flat");
+
   const [showWheels, setShowWheels] = useState(true);
   const [showHandlebars, setShowHandlebars] = useState(false);
   const [showSaddle, setShowSaddle] = useState(false);
+  const [showDrivetrain, setShowDrivetrain] = useState(false);
 
   return (
     <main className="min-h-screen bg-background">
@@ -54,12 +59,16 @@ export default function BikeBuilderPage() {
         <div className="grid gap-10 py-12 lg:grid-cols-[1fr_360px]">
           {/* Interactive bicycle preview */}
           <div className="flex min-h-[480px] items-center justify-center bg-neutral-200 p-6">
+            
             <BikePreview
-              frameColor={selectedColor.hex}
-              showWheels={showWheels}
-              showHandlebars={showHandlebars}
-              showSaddle={showSaddle}
+            frameColor={selectedColor.hex}
+            showWheels={showWheels}
+            showHandlebars={showHandlebars}
+            showSaddle={showSaddle}
+            showDrivetrain={showDrivetrain}
+            handlebarType={handlebarType}
             />
+
           </div>
 
           {/* Configuration panel */}
@@ -138,34 +147,59 @@ export default function BikeBuilderPage() {
               </button>
             </div>
 
-            {/* Handlebar configuration */}
-            <div className="border-t border-neutral-300 pt-6">
-              <p className="font-mono text-xs uppercase tracking-wider text-neutral-500">
-                03 / Handlebars
-              </p>
+            
+{/* Handlebar configuration */}
+<div className="border-t border-neutral-300 pt-6">
+  <p className="font-mono text-xs uppercase tracking-wider text-neutral-500">
+    03 / Handlebars
+  </p>
 
-              <h3 className="mt-4 text-xl font-semibold">
-                Flat handlebar
-              </h3>
+  <h3 className="mt-4 text-xl font-semibold">
+    Handlebar type
+  </h3>
 
-              <p className="mt-2 text-sm text-neutral-600">
-                {showHandlebars
-                  ? "Handlebars installed"
-                  : "No handlebars selected"}
-              </p>
+  <p className="mt-2 text-sm text-neutral-600">
+    {showHandlebars
+      ? "Choose your preferred handlebar."
+      : "No handlebars selected"}
+  </p>
 
-              <button
+        <div className="mt-6 grid grid-cols-3 gap-2">
+            {(["flat", "riser", "drop"] as HandlebarType[]).map(
+            (type) => (
+                <button
+                key={type}
                 type="button"
-                onClick={() =>
-                  setShowHandlebars((previous) => !previous)
+                onClick={() => {
+                    setHandlebarType(type);
+                    setShowHandlebars(true);
+                }}
+                aria-pressed={
+                    showHandlebars && handlebarType === type
                 }
-                className="mt-6 border border-foreground px-6 py-3 text-sm font-medium transition-colors hover:bg-foreground hover:text-white"
-              >
-                {showHandlebars
-                  ? "Remove handlebars"
-                  : "Add handlebars"}
-              </button>
-            </div>
+                className={`border px-3 py-3 text-xs font-medium capitalize transition-colors ${
+                    showHandlebars && handlebarType === type
+                    ? "border-foreground bg-foreground text-white"
+                    : "border-neutral-300 hover:border-foreground"
+                }`}
+                >
+                {type}
+                </button>
+            )
+            )}
+        </div>
+
+        {showHandlebars && (
+            <button
+            type="button"
+            onClick={() => setShowHandlebars(false)}
+            className="mt-4 text-sm text-neutral-500 underline underline-offset-4 hover:text-foreground"
+            >
+            Remove handlebars
+            </button>
+        )}
+        </div>
+
 
             {/* Saddle configuration */}
             <div className="border-t border-neutral-300 pt-6">
@@ -193,17 +227,36 @@ export default function BikeBuilderPage() {
                 {showSaddle ? "Remove saddle" : "Add saddle"}
               </button>
             </div>
-
-            {/* Upcoming components */}
+            
+            {/* Drivetrain configuration */}
             <div className="border-t border-neutral-300 pt-6">
-              <p className="font-mono text-xs uppercase tracking-wider text-neutral-500">
-                Next components
-              </p>
-
-              <p className="mt-5 text-sm text-neutral-500">
+            <p className="font-mono text-xs uppercase tracking-wider text-neutral-500">
                 05 / Drivetrain
-              </p>
+            </p>
+
+            <h3 className="mt-4 text-xl font-semibold">
+                Single-speed drivetrain
+            </h3>
+
+            <p className="mt-2 text-sm text-neutral-600">
+                {showDrivetrain
+                ? "Drivetrain installed"
+                : "No drivetrain selected"}
+            </p>
+
+            <button
+                type="button"
+                onClick={() =>
+                setShowDrivetrain((previous) => !previous)
+                }
+                className="mt-6 border border-foreground px-6 py-3 text-sm font-medium transition-colors hover:bg-foreground hover:text-white"
+            >
+                {showDrivetrain
+                ? "Remove drivetrain"
+                : "Add drivetrain"}
+            </button>
             </div>
+
 
             {/* Navigation */}
             <Link

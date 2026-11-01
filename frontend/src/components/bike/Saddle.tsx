@@ -1,7 +1,15 @@
 
-export default function Saddle() {
+import type { FrameType } from "./Frame";
+
+interface SaddleProps {
+  frameType: FrameType;
+}
+
+export default function Saddle({ frameType }: SaddleProps) {
+  const offsetY = frameType === "aggressive" ? 20 : 0;
+
   return (
-    <g>
+    <g transform={`translate(0 ${offsetY})`}>
       {/* Seatpost */}
       <line
         x1="345"

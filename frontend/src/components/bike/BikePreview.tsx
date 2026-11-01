@@ -48,12 +48,14 @@ export default function BikePreview({
       <Frame color={frameColor} type={frameType} />
       <Fork color={frameColor} />
 
-      {/* Optional components */}
       {showHandlebars && (
-        <Handlebars type={handlebarType} />
-      )}
+        <Handlebars
+            type={handlebarType}
+            frameType={frameType}
+        />
+        )}
 
-      {showSaddle && <Saddle />}
+      {showSaddle && <Saddle frameType={frameType} />}
 
       {showDrivetrain && <Drivetrain />}
     </svg>
